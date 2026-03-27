@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import ChartComponent from '../components/ChartComponent';
-import { Award, CheckCircle, XCircle, Clock, Home, TrendingUp } from 'lucide-react';
+import { Award, XCircle, Clock, Home, TrendingUp, Loader2 } from 'lucide-react';
 
 const Result = () => {
   const { id } = useParams();
@@ -14,19 +14,10 @@ const Result = () => {
   useEffect(() => {
     const fetchResult = async () => {
       try {
-        // Need to refetch user's specific submission with questions
-        const res = await api.get(`/submissions/my`);
-        const currentSub = res.data.find(sub => sub._id === id);
-        
-        if (currentSub) {
-           // Fetch original exam to show what questions were right/wrong
-           const examRes = await api.get(`/exams/${currentSub.examId._id}`);
-           setResult({ ...currentSub, examDetails: examRes.data });
-        } else {
-           setError('Result not found or unauthorized.');
-        }
+        const res = await api.get(`/submissions/${id}`);
+        setResult(res.data);
       } catch (err) {
-        setError('Failed to fetch result');
+        setError(err.response?.data?.message || 'Failed to fetch result');
       } finally {
         setLoading(false);
       }
@@ -40,25 +31,7 @@ const Result = () => {
 
   if (!result) return <div>No result data.</div>;
 
-  const { score, totalMarks, percentage, passed, timeTaken, examDetails, answers } = result;
-  
-  // Calculate correct/incorrect counts
-  let correctCount = 0;
-  let incorrectCount = 0;
-  let unattemptedCount = 0;
-
-  answers.forEach(ans => {
-    const question = examDetails.questions.find(q => q._id === ans.questionId);
-    if (!question) return;
-    
-    // In actual implementation, student GET /exam/:id doesn't return correctAnswer.
-    // If we want detailed review, we need an endpoint /submissions/:id/review or simply show overall stats.
-    // Since our AttemptExam fetched without correct answers, we'll just show the high level stats for now.
-    // Wait, the Schema Submission stores score, totalMarks, etc.
-  });
-
-  // We can just rely on the overall counts if we can't do individual mapping easily on frontend.
-  // Actually, we can just display the overall stats perfectly.
+  const { score, totalMarks, percentage, passed, timeTaken } = result;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">

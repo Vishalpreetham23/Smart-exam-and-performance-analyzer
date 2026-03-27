@@ -107,13 +107,17 @@ const AttemptExam = () => {
     const timeTaken = Math.ceil((exam.duration * 60 - timeLeft) / 60);
 
     try {
-      const res = await api.post(`/submissions/${exam._id}`, {
+      console.log("Submitting exam answers for exam:", exam._id);
+      await api.post(`/submissions/${exam._id}`, {
         answers: formattedAnswers,
-        timeTaken: timeTaken === 0 ? 1 : timeTaken, // min 1 min
+        timeTaken: timeTaken === 0 ? 1 : timeTaken,
       });
-      navigate(`/result/${res.data._id}`, { replace: true });
+
+      // Redirection to dashboard with results view as requested
+      navigate('/dashboard?view=results', { replace: true });
     } catch (err) {
-      setError(err.response?.data?.message || 'Error submitting exam');
+      console.error("Submission error:", err);
+      setError(err.response?.data?.message || err.message || 'Error submitting exam');
       setSubmitting(false);
     }
   }, [answers, exam, timeLeft, submitting, navigate]);

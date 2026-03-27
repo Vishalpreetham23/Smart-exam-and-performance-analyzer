@@ -117,23 +117,23 @@ const Dashboard = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700 text-gray-600 dark:text-gray-400">
-                  {submissions.map(sub => (
-                    <tr key={sub._id} className="hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors">
-                      <td className="p-4 font-medium text-gray-900 dark:text-white">{sub.examId?.title || 'Deleted Exam'}</td>
-                      <td className="p-4">{sub.score} / {sub.totalMarks}</td>
-                      <td className="p-4">{sub.percentage.toFixed(1)}%</td>
-                      <td className="p-4">
-                        <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${sub.passed ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'}`}>
-                          {sub.passed ? 'PASSED' : 'FAILED'}
-                        </span>
-                      </td>
-                      <td className="p-4">
-                        <Link to={`/result/${sub._id}`} className="text-primary-600 hover:text-primary-700 dark:text-primary-400 font-medium text-sm hover:underline">
-                          View Details
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
+                    {submissions.map(sub => (
+                      <tr key={sub._id} className="hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors">
+                        <td className="p-4 font-medium text-gray-900 dark:text-white">{sub.examId?.title || 'Unknown Exam'}</td>
+                        <td className="p-4">{sub.score} / {sub.totalMarks}</td>
+                        <td className="p-4">{sub.percentage?.toFixed?.(1) || '0.0'}%</td>
+                        <td className="p-4">
+                          <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${sub.passed ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'}`}>
+                            {sub.passed ? 'PASSED' : 'FAILED'}
+                          </span>
+                        </td>
+                        <td className="p-4">
+                          <Link to={`/result/${sub._id}`} className="text-primary-600 hover:text-primary-700 dark:text-primary-400 font-medium text-sm hover:underline">
+                            View Details
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>
@@ -201,11 +201,11 @@ const Dashboard = () => {
                 </div>
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center">
                   <div className="p-3 bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400 rounded-lg mr-4"><TrendingUp size={24}/></div>
-                  <div><p className="text-sm text-gray-500 dark:text-gray-400">Pass Rate</p><p className="text-2xl font-bold text-gray-900 dark:text-white">{analytics.passPercentage.toFixed(1)}%</p></div>
+                  <div><p className="text-sm text-gray-500 dark:text-gray-400">Pass Rate</p><p className="text-2xl font-bold text-gray-900 dark:text-white">{analytics.passPercentage?.toFixed?.(1) || '0.0'}%</p></div>
                 </div>
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center">
                   <div className="p-3 bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400 rounded-lg mr-4"><BarChart2 size={24}/></div>
-                  <div><p className="text-sm text-gray-500 dark:text-gray-400">Avg Score</p><p className="text-2xl font-bold text-gray-900 dark:text-white">{analytics.averageScore.toFixed(1)}</p></div>
+                  <div><p className="text-sm text-gray-500 dark:text-gray-400">Avg Score</p><p className="text-2xl font-bold text-gray-900 dark:text-white">{analytics.averageScore?.toFixed?.(1) || '0.0'}</p></div>
                 </div>
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center">
                    <div className="p-3 bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400 rounded-lg mr-4"><Award size={24}/></div>
@@ -242,8 +242,8 @@ const Dashboard = () => {
                             #{idx + 1}
                           </span>
                           <div>
-                            <p className="font-semibold text-gray-900 dark:text-white">{sub.studentId.name}</p>
-                            <p className="text-xs text-gray-500">{sub.percentage.toFixed(1)}% • {sub.timeTaken} mins</p>
+                            <p className="font-semibold text-gray-900 dark:text-white">{sub.studentId?.name || 'Anonymous'}</p>
+                            <p className="text-xs text-gray-500">{sub.percentage?.toFixed?.(1) || '0.0'}% • {sub.timeTaken || 0} mins</p>
                           </div>
                         </div>
                         <span className="font-mono font-medium text-primary-600 dark:text-primary-400">{sub.score} <span className="text-xs text-gray-400">pts</span></span>

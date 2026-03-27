@@ -10,6 +10,16 @@ export const submitExam = async (req, res, next) => {
     const { examId } = req.params;
     const { answers, timeTaken } = req.body;
 
+    if (req.user.role !== 'Student') {
+      res.status(403);
+      throw new Error('Only students can submit exams');
+    }
+
+    if (!Array.isArray(answers)) {
+      res.status(400);
+      throw new Error('Answers must be an array');
+    }
+
     const exam = await Exam.findById(examId);
     if (!exam) {
       res.status(404);
@@ -69,6 +79,7 @@ export const submitExam = async (req, res, next) => {
     });
 
     const createdSubmission = await submission.save();
+
     res.status(201).json(createdSubmission);
   } catch (error) {
     next(error);
@@ -107,6 +118,37 @@ export const getExamSubmissions = async (req, res, next) => {
       res.status(403);
       throw new Error('Not authorized to view these submissions');
     }
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Get a single submission by ID
+// @route   GET /api/submissions/:id
+// @access  Private
+export const getSubmissionById = async (req, res, next) => {
+  try {
+    const submission = await Submission.findById(req.params.id)
+      .populate('studentId', 'name email')
+      .populate('examId', 'title duration createdBy');
+
+    if (!submission) {
+      res.status(404);
+      throw new Error('Submission not found');
+    }
+
+    const isStudentOwner = submission.studentId?._id.toString() === req.user._id.toString();
+    const isAdmin = req.user.role === 'Admin';
+    const isTeacherOwner =
+      req.user.role === 'Teacher' &&
+      submission.examId?.createdBy?.toString() === req.user._id.toString();
+
+    if (!isStudentOwner && !isAdmin && !isTeacherOwner) {
+      res.status(403);
+      throw new Error('Not authorized to view this submission');
+    }
+
+    res.json(submission);
   } catch (error) {
     next(error);
   }
